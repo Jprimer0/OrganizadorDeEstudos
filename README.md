@@ -1,5 +1,8 @@
 # Organizador de Pastas e Arquivos em Python
 
+o nome do projeto e pjt.py
+
+
 ## Sobre o projeto
 
 Este projeto é um programa desenvolvido em Python para automatizar a criação de pastas, subpastas e arquivos de texto.
