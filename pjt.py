@@ -2,129 +2,214 @@
 import os
 
 lista_pastas = []
+liste = []
 
-while True:
-      sim_nao = input("deseja criar pastas? (s/n): ").lower().strip()
-      if sim_nao == "s":
+
+def proximo_comando():
+            
+    while True:
+       escolha = input(" continua: (c), pular: (p), sair: (s): ").lower().strip()
+       if escolha == "c":
           print("ok, sera criado pastas")
-          break           
+          return "continuar"           
           
-      elif sim_nao == "n":
-           print("ok, nao sera criado pastas")
+       elif escolha == "p":
+           print("ok, pastas sera puladas")
+           return "pular"
+
+       elif escolha == "s":
            exit()
-      else:
-          print("Digite apenas 's' ou 'n'.")
+
+       else:
+           print("Digite apenas 'p', 'c' ou 's'.")
           
 
-print("digite o nome das pastas que deseja criar, separadas por virguras:")
-
-#
-
-while True:
-    try:   
+    
+def criar_pastas():
+    print("digite o nome das pastas que deseja criar, separadas por virguras:")
+    while True:
+      try:   
 
        
-       nomes_pastas = [nome.strip() for nome in input("nome das pasta primcipal: ").split(",")]
+          nomes_pastas = [nome.strip() for nome in input("nome das pasta primcipal: ").split(",")]
 
-       if not all(nome.isalpha() for nome in nomes_pastas):
-           raise ValueError("O nome da pasta deve conter só letras. sem espaços ou numeros.")
-       lista_pastas.extend([nome.strip() for nome in nomes_pastas])
+          if not all(nome.isalpha() for nome in nomes_pastas):
+             raise ValueError("O nome da pasta deve conter só letras. sem espaços ou numeros.")
 
-       for lista in lista_pastas:
-           os.mkdir(lista)
-       print("nome valido")
-       break   
+          existe = False
+                
+          for lista in nomes_pastas:
+
+              if os.path.exists(lista):
+                  print(f"A pasta '{lista}' já existe. Por favor, crie uma pasta nova.")
+                  existe = True
+                  break
+
+          if existe:
+             continue
+
+          lista_pastas.extend(nomes_pastas)
+
+          for lista in nomes_pastas:
+              os.mkdir(lista)
+            
+          print("nome valido")
+          break   
     
-    except ValueError as e:
-        print("digite apenas letras, sem numeros", e)
+      except ValueError as e:
+         print("digite apenas letras, sem numeros", e)
 
-#
-subs = input("cria subpastas dentro das pastas criadas? (s/n): ").lower().strip()
-if subs == "s":
-    print("ok, sera criado subpastas")
-elif subs == "n":
-    print("ok, nao sera criado subpastas")
-    exit()
-
-while True:
-    try:
-        valor = int(input("quantas pastas deseja criar: "))
-        break
-    except ValueError:
-        print("digite apenas numeros")
-liste = []
-for i in range(valor):
+def valores():
     while True:
-          nome_pasta = input(f"Digite o nome da pasta {i + 1}: ").strip()
-          if not nome_pasta.isalpha():
-              print("O nome da pasta deve conter apenas letras. sem espaços ou numeros.")
-              continue
+        try: 
+            valor = int(input("quantas pastas deseja criar: "))
+            
+            if valor <= 0:
+               raise ValueError("O valor deve ser maior que zero.")
+            
+            break
 
-          subpastas = [f"{pasta}/{subpasta}" for pasta in lista_pastas for subpasta in liste]
+        except ValueError:
+            print("digite apenas numeros")  
+
+    for i in range(valor):
+        while True:
+            nome_pasta = input(f"Digite o nome da pasta {i + 1}: ").strip()
+
+            if not nome_pasta.isalpha():
+                    print("O nome da pasta deve conter apenas letras. sem espaços ou numeros.")
+                    continue
           
-          liste.append(nome_pasta)
-          os.mkdir(f"{lista_pastas[0]}/{liste[i]}")
-          break
-    
-print("vocâ que cria aquivos txt/md na subpastas? (s/n): ")
-while True:
-    sim_nao = input("digite 's' para sim ou 'n' para nao: ").lower().strip()
-    if sim_nao == "s":
-        print("ok, sera criado aquivos txt/md")
-        break
+            existe = False
 
-    elif sim_nao == "n":
-        print("ok, nao sera criado aquivos txt/md")
-        exit()
+            for pasta in lista_pastas:
+                camino = os.path.join(pasta, nome_pasta)
 
-    else:
-        print("Digite apenas 's' ou 'n'.")
+                if os.path.exists(camino):
+                    print(f"A pasta '{camino}' já existe. Por favor, crie uma pasta nova.")
+                    existe = True
+                    break
+                
+            if existe:
+                continue
 
+            liste.append(nome_pasta)
+
+            for pasta in lista_pastas:
+                camino = os.path.join(pasta, nome_pasta)
+                os.mkdir(camino) 
+                          
+            break
+                  
+#digite se quer criar aquivos txt/md nas subpastas
 nomes_arquivos = []
 
-# um erro e que ele nao ta pegando a criação de aquivos txt e md,
-# ele ta pegando apenas a criação de pastas, e o erro é que ele ta pegando a criação de pastas e aquivos txt/md juntos,
-#  e nao separados, entao eu vou separar eles, e vou criar uma função para criar aquivos txt/md, e vou chamar essa função dentro do loop while True, 
-# assim ele vai criar os aquivos txt/md dentro das pastas criadas.
+def txt():
 
-while True:
-    try:
-        entrada = input("digite o nome dos aquivos que deseja criar, separados por virgulas: ").strip().lower()
+    while True:
+        try:
+           print("se que sair do programa digite 'sair' para encerrar o programa") 
 
-        if entrada == "sair".lower():
-           print("saindo do programa...")
-           break
+           entrada = input("digite o nome dos aquivos que deseja criar, separados por virgulas: ").strip().lower()
 
-        nome_arquivo = [nome.strip() for nome in entrada.split(",")]
+           if entrada == "sair".lower():
+            print("saindo do programa...")
+            break
+
+           nome_arquivo = [nome.strip() for nome in entrada.split(",")]
        
+           while True:
+
+            if not all(nome.isalpha() for nome in nome_arquivo):
+                 raise ValueError("O nome do arquivo deve conter apenas letras. sem espaços ou numeros.")
+
+            nomes_arquivos.extend(nome_arquivo)
 
 
-        if not all(nome.isalpha() for nome in nome_arquivo):
-            raise ValueError("O nome do arquivo deve conter apenas letras. sem espaços ou numeros.")
+            for arquivo in nomes_arquivos:
+              camino = os.path.join(f"{lista_pastas}/{liste}")
 
-        nomes_arquivos.extend(nome_arquivo)
+              if not os.path.exists(camino):
+                    print(f"A aquivo '{camino}' ja existe. Por favor, crie a arquivo novo.")
+              else:
+                 with open(os.path.join(f"{camino}", f"{arquivo}.txt" ), "w") as arquivo_txt:
+                    arquivo_txt.write("")
+                    pass
+                 break
+             
+        except ValueError as e:
+             print("digite apenas letras, sem numeros", e)
 
+def txt2():
+    while True:
+     try: 
+         print("se que sair do programa digite 'sair' para encerrar o programa") 
+         
+         
+         entrada = input("digite o nome dos aquivos que deseja criar, separados por virgulas: ").strip().lower()
 
-        for arquivo in nomes_arquivos:
-            with open(f"{lista_pastas}/{liste[i]}/{arquivo}.txt", "w") as arquivo_txt:
-                arquivo_txt.write("")
-                pass
-        print("se que sair do programa digite 'sair' ou se nao quiser criar aquivos digite 'nao'")
-
-
-        if entrada == "s".lower():
-            print("ok, sera criado aquivos txt/md")
+         if entrada == "sair".lower():
+            print("ok saindo")
             break
 
-        elif entrada == "n".lower():
-            print("ok, nao sera criado aquivos txt/md")    
-            exit()
+         nome_arquivo = [nome.strip() for nome in entrada.split(",")]
+               
+        
+        
+         if not all(nome.isalpha() for nome in nome_arquivo):
+             raise ValueError("O nome do arquivo deve conter apenas letras. sem espaços ou numeros.")
 
-            with open(f"{lista_pastas}/{liste[i]}/{arquivo}.md", "w") as arquivo_md:
-                arquivo_md.write("")
-                pass
+         nomes_arquivos.extend(nome_arquivo)
+
+
+         while True:
+            for arquivo in nomes_arquivos:
+               if not os.path.exists(camino):
+                print(f"A aquivo '{camino}' ja existe. Por favor, crie a arquivo novo.")
+            else:
+                camino = os.path.join(f"{lista_pastas}/{liste}")
+
+            with open(os.path.join(f"{camino}", f"{arquivo}.md"), "w") as arquivo_md:
+                 arquivo_md.write("")
+                 pass
             break
-        print("\narquivos criados com sucesso!")
+     except ValueError as e:
+             print("digite apenas letras, sem numeros", e)
+    print("\narquivos criados com sucesso!")
 
-    except ValueError as e:
-        print("digite apenas letras, sem numeros", e)
+def main():
+
+    escolha = proximo_comando()
+
+    if escolha == "continuar":
+        criar_pastas()
+
+    elif escolha == "pular":
+        pass    
+
+    escolha = proximo_comando()
+
+    if escolha == "continuar":
+        valores()
+
+    elif escolha == "pular":
+        pass    
+
+    escolha = proximo_comando()
+
+    if escolha == "continuar":
+        txt()
+
+    if escolha == "pular":
+        pass
+
+    escolha = proximo_comando()
+
+    if escolha == "continuar":
+        txt2()
+
+    elif escolha == "pular":
+        pass
+
+if __name__ == "__main__":
+    main()
